@@ -1,18 +1,26 @@
 ﻿#pragma once
 
+#include <QWidget>
+
 #ifdef SHARED_LIBRARY
-#define DLL_EXPORT    __declspec(dllexport)
+#define DLLEXPORT Q_DECL_EXPORT
 #else
-#define DLL_EXPORT    __declspec(dllimport)
+#define DLLEXPORT Q_DECL_IMPORT
 #endif
 
-#include <QWidget>
 
 namespace bbwidgets {
 
 
-    class DLL_EXPORT Led : public QWidget {
+    class DLLEXPORT Led : public QWidget {
+        Q_OBJECT
+        // Q_PROPERTY(QColor color MEMBER color_ NOTIFY colorChanged)
+
     public:
+        Led(QWidget* parent = nullptr);
+
+    protected:
+        void paintEvent(QPaintEvent* event) override;
 
     private:
 

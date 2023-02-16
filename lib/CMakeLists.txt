@@ -4,8 +4,7 @@ file(GLOB SOURCE_FILES "*.cpp")
 file(GLOB HEADER_FILES "*.hpp" "../include/${PROJECT_NAME}/*.hpp")
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${HEADER_FILES})
-target_compile_definitions(${PROJECT_NAME} PUBLIC SHARED_LIBRARY)
-target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_SOURCE_DIR}/include")
+target_compile_definitions(${PROJECT_NAME} PRIVATE SHARED_LIBRARY)
 target_link_libraries(${PROJECT_NAME} PUBLIC Qt6::Widgets)
 
 add_custom_command(
