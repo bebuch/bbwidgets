@@ -10,14 +10,15 @@ namespace bbwidgets {
 
 
     Led::Led(QWidget* const parent)
-        : Led(Qt::green, parent)
-        {}
-
-    Led::Led(float const hsl_hue, QWidget* const parent)
         : QWidget(parent)
     {
-        setHslHueF(hsl_hue);
         setAutoFillBackground(true);
+    }
+
+    Led::Led(float const hsl_hue, QWidget* const parent)
+        : Led(parent)
+    {
+        setHslHueF(hsl_hue);
     }
 
     Led::Led(Qt::GlobalColor const color, QWidget* const parent)
@@ -25,11 +26,17 @@ namespace bbwidgets {
         {}
 
     Led::Led(QColor const& color, QWidget* const parent)
-        : Led(color.hslHueF(), parent)
-        {}
+        : Led(parent)
+    {
+        setColor(color);
+    }
 
-    float Led::hslHueF() const {
+    std::optional<float> Led::hslHueF() const {
         return hsl_hue_;
+    }
+
+    void Led::unsetHslHueF() {
+        hsl_hue_.reset();
     }
 
     void Led::setHslHueF(float const hue) {
@@ -37,12 +44,24 @@ namespace bbwidgets {
         hslHueFChanged(hsl_hue_);
     }
 
+    void Led::unsetColor() {
+        unsetHslHueF();
+    }
+
     QColor Led::color() const {
-        return QColor::fromHslF(hsl_hue_, 1.f, .4f);
+        if (hsl_hue_) {
+            return QColor::fromHslF(*hsl_hue_, 1.f, .4f);
+        } else {
+            return QColor::fromHslF(0.f, 0.f, .4f);
+        }
     }
 
     void Led::setColor(QColor const& color) {
-        setHslHueF(color.hslHueF());
+        if (color.hslSaturationF() == 0.f) {
+            unsetHslHueF();
+        } else {
+            setHslHueF(color.hslHueF());
+        }
     }
 
     QSize Led::sizeHint() const {

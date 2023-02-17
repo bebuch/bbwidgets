@@ -14,6 +14,8 @@ int main(int argc, char** argv){
     auto const layout = new QVBoxLayout{};
     window.setLayout(layout);
 
+    layout->addWidget(new bbwidgets::Led{});
+
     auto const count = 12;
     for (auto const i : std::views::iota(0, count - 1)) {
         layout->addWidget(new bbwidgets::Led{1.f / count * i});
