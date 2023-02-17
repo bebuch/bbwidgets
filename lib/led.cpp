@@ -4,51 +4,51 @@
 #include <QPainter>
 
 #include <algorithm>
+#include <cmath>
 
 
 namespace bbwidgets {
 
 
-    Led::Led(QWidget* const parent)
-        : QWidget(parent)
-    {
-        setAutoFillBackground(true);
-    }
-
-    Led::Led(float const hsl_hue, QWidget* const parent)
-        : Led(parent)
-    {
-        setHslHueF(hsl_hue);
-    }
-
-    Led::Led(Qt::GlobalColor const color, QWidget* const parent)
-        : Led(QColor(color), parent)
+    LedState::LedState(std::optional<float> const hsl_hue, bool const state, bool const enabled)
+        : hsl_hue_(hsl_hue)
+        , state_(state)
+        , enabled_(enabled)
         {}
 
-    Led::Led(QColor const& color, QWidget* const parent)
-        : Led(parent)
-    {
-        setColor(color);
-    }
+    LedState::LedState(float const hls_hue, bool const state, bool const enabled)
+        : LedState(std::optional(hls_hue), state, enabled)
+        {}
 
-    std::optional<float> Led::hslHueF() const {
+    LedState::LedState(QColor const& color, bool const state, bool const enabled)
+        : LedState(toHlsHueF(color), state, enabled)
+        {}
+
+    LedState::LedState(Qt::GlobalColor const color, bool const state, bool const enabled)
+        : LedState(QColor(color), state, enabled)
+        {}
+
+    std::optional<float> LedState::hslHueF() const {
         return hsl_hue_;
     }
 
-    void Led::unsetHslHueF() {
+    void LedState::unsetHslHueF() {
         hsl_hue_.reset();
     }
 
-    void Led::setHslHueF(float const hue) {
-        hsl_hue_ = std::clamp(hue, 0.f, 1.f);
-        hslHueFChanged(hsl_hue_);
+    void LedState::setHslHueF(std::optional<float> const hue) {
+        if (hue && std::isnormal(*hue)) {
+            hsl_hue_ = std::clamp(*hue, 0.f, 1.f);
+        } else {
+            unsetHslHueF();
+        }
     }
 
-    void Led::unsetColor() {
+    void LedState::unsetColor() {
         unsetHslHueF();
     }
 
-    QColor Led::color() const {
+    QColor LedState::color() const {
         if (hsl_hue_) {
             return QColor::fromHslF(*hsl_hue_, 1.f, .4f);
         } else {
@@ -56,16 +56,41 @@ namespace bbwidgets {
         }
     }
 
-    void Led::setColor(QColor const& color) {
+    void LedState::setColor(QColor const& color) {
+        setHslHueF(toHlsHueF(color));
+    }
+
+    std::optional<float> LedState::toHlsHueF(QColor const& color) {
         if (color.hslSaturationF() == 0.f) {
-            unsetHslHueF();
+            return std::nullopt;
         } else {
-            setHslHueF(color.hslHueF());
+            return color.hslHueF();
         }
     }
 
+
+    Led::Led(QWidget* const parent)
+        : Led(LedState{}, parent)
+        {}
+
+    Led::Led(LedState const& state, QWidget* const parent)
+        : QWidget(parent)
+        , state_(state)
+    {
+        setAutoFillBackground(true);
+    }
+
+    LedState Led::state() const {
+        return state_;
+    }
+
+    void Led::setState(LedState const& state) {
+        state_ = state;
+        stateChanged(state_);
+    }
+
     QSize Led::sizeHint() const {
-        auto const s = QFontMetrics{{}}.height();
+        auto const s = QFontMetrics{ {} }.height();
         return { s, s };
     }
 
@@ -86,7 +111,7 @@ namespace bbwidgets {
         painter.setBrush(border_color);
         painter.drawEllipse(border_square);
 
-        auto const basic_color = color();
+        auto const basic_color = state_.color();
         auto const basic_square = border_square.adjusted(s * 0.1, s * 0.1, s * -0.1, s * -0.1);
 
         auto const basic_from = border_square.topLeft() + QPoint(0, s * 0.1);
