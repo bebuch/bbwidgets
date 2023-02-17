@@ -14,16 +14,28 @@ namespace bbwidgets {
 
     class DLLEXPORT Led : public QWidget {
         Q_OBJECT
-        // Q_PROPERTY(QColor color MEMBER color_ NOTIFY colorChanged)
 
     public:
         Led(QWidget* parent = nullptr);
+        Led(float hsl_hue, QWidget* parent = nullptr);
+        Led(Qt::GlobalColor color, QWidget* parent = nullptr);
+        Led(QColor const& color, QWidget* parent = nullptr);
+
+        float hslHueF() const;
+        void setHslHueF(float hue);
+
+        QColor color() const;
+        void setColor(QColor const& color);
+
+    signals:
+        void hslHueFChanged(float hue);
 
     protected:
+        QSize sizeHint() const override;
         void paintEvent(QPaintEvent* event) override;
 
     private:
-
+        float hsl_hue_;
     };
 
 
