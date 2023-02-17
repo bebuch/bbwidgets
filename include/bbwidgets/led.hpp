@@ -4,11 +4,7 @@
 
 #include <optional>
 
-#ifdef SHARED_LIBRARY
-#define DLLEXPORT Q_DECL_EXPORT
-#else
-#define DLLEXPORT Q_DECL_IMPORT
-#endif
+#include "globals.hpp"
 
 
 namespace bbwidgets {
@@ -16,24 +12,25 @@ namespace bbwidgets {
 
     class DLLEXPORT LedState {
     public:
-        LedState(std::optional<float> hls_hue = std::nullopt, bool state = false, bool enabled = true);
-        LedState(float hls_hue, bool state = false, bool enabled = true);
+        LedState(std::optional<int> hue = std::nullopt, bool state = false, bool enabled = true);
+        LedState(int hue, bool state = false, bool enabled = true);
         LedState(QColor const& color, bool state = false, bool enabled = true);
         LedState(Qt::GlobalColor color, bool state = false, bool enabled = true);
 
-        std::optional<float> hslHueF() const;
-        void unsetHslHueF();
-        void setHslHueF(std::optional<float> hue);
+        void unsetHue();
+        void setHue(std::optional<int> hue);
+        void setHueBy(QColor const& color);
 
-        QColor color() const;
-        void unsetColor();
-        void setColor(QColor const& color);
+        std::optional<int> hue() const;
+        bool isChecked() const;
+        bool isEnabled() const;
 
-        static std::optional<float> toHlsHueF(QColor const& color);
+        static std::optional<int> toHue(QColor const& color);
+        static std::optional<int> normalized(std::optional<int> const hue);
 
     private:
-        std::optional<float> hsl_hue_;
-        bool state_;
+        std::optional<int> hue_;
+        bool checked_;
         bool enabled_;
     };
 
@@ -48,14 +45,16 @@ namespace bbwidgets {
         void setState(LedState const& state);
 
     signals:
-        void stateChanged(LedState const& state);
+        void stateChanged();
 
     protected:
         QSize sizeHint() const override;
         void paintEvent(QPaintEvent* event) override;
+        void changeEvent(QEvent* event) override;
 
     private:
-        LedState state_;
+        std::optional<int> hue_;
+        bool check_;
     };
 
 

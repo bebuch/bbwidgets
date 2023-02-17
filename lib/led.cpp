@@ -2,6 +2,7 @@
 
 #include <QFontMetrics> 
 #include <QPainter>
+#include <QEvent>
 
 #include <algorithm>
 #include <cmath>
@@ -10,61 +11,77 @@
 namespace bbwidgets {
 
 
-    LedState::LedState(std::optional<float> const hsl_hue, bool const state, bool const enabled)
-        : hsl_hue_(hsl_hue)
-        , state_(state)
+    static_assert(cyclic_adapt(0, 0, 3) == 0);
+    static_assert(cyclic_adapt(1, 0, 3) == 1);
+    static_assert(cyclic_adapt(2, 0, 3) == 2);
+    static_assert(cyclic_adapt(3, 0, 3) == 0);
+    static_assert(cyclic_adapt(4, 0, 3) == 1);
+    static_assert(cyclic_adapt(5, 0, 3) == 2);
+    static_assert(cyclic_adapt(6, 0, 3) == 0);
+    static_assert(cyclic_adapt(7, 0, 3) == 1);
+    static_assert(cyclic_adapt(-1, 0, 3) == 2);
+    static_assert(cyclic_adapt(-2, 0, 3) == 1);
+    static_assert(cyclic_adapt(-3, 0, 3) == 0);
+    static_assert(cyclic_adapt(-4, 0, 3) == 2);
+    static_assert(cyclic_adapt(-5, 0, 3) == 1);
+    static_assert(cyclic_adapt(-6, 0, 3) == 0);
+    static_assert(cyclic_adapt(-7, 0, 3) == 2);
+
+    LedState::LedState(std::optional<int> const hue, bool const check, bool const enabled)
+        : hue_(normalized(hue))
+        , checked_(check)
         , enabled_(enabled)
         {}
 
-    LedState::LedState(float const hls_hue, bool const state, bool const enabled)
-        : LedState(std::optional(hls_hue), state, enabled)
+    LedState::LedState(int const hue, bool const state, bool const enabled)
+        : LedState(std::optional(hue), state, enabled)
         {}
 
     LedState::LedState(QColor const& color, bool const state, bool const enabled)
-        : LedState(toHlsHueF(color), state, enabled)
+        : LedState(toHue(color), state, enabled)
         {}
 
     LedState::LedState(Qt::GlobalColor const color, bool const state, bool const enabled)
         : LedState(QColor(color), state, enabled)
         {}
 
-    std::optional<float> LedState::hslHueF() const {
-        return hsl_hue_;
+    void LedState::unsetHue() {
+        hue_.reset();
     }
 
-    void LedState::unsetHslHueF() {
-        hsl_hue_.reset();
+    void LedState::setHue(std::optional<int> const hue) {
+        hue_ = normalized(hue);
     }
 
-    void LedState::setHslHueF(std::optional<float> const hue) {
-        if (hue && std::isnormal(*hue)) {
-            hsl_hue_ = std::clamp(*hue, 0.f, 1.f);
-        } else {
-            unsetHslHueF();
-        }
+    void LedState::setHueBy(QColor const& color) {
+        setHue(toHue(color));
     }
 
-    void LedState::unsetColor() {
-        unsetHslHueF();
+    std::optional<int> LedState::hue() const {
+        return hue_;
     }
 
-    QColor LedState::color() const {
-        if (hsl_hue_) {
-            return QColor::fromHslF(*hsl_hue_, 1.f, .4f);
-        } else {
-            return QColor::fromHslF(0.f, 0.f, .4f);
-        }
+    bool LedState::isChecked() const {
+        return checked_;
     }
 
-    void LedState::setColor(QColor const& color) {
-        setHslHueF(toHlsHueF(color));
+    bool LedState::isEnabled() const {
+        return enabled_;
     }
 
-    std::optional<float> LedState::toHlsHueF(QColor const& color) {
-        if (color.hslSaturationF() == 0.f) {
+    std::optional<int> LedState::toHue(QColor const& color) {
+        if (color.hslSaturation() == 0) {
             return std::nullopt;
         } else {
-            return color.hslHueF();
+            return color.hue();
+        }
+    }
+
+    std::optional<int> LedState::normalized(std::optional<int> const hue) {
+        if (hue) {
+            return cyclic_adapt(*hue, 0, 360);
+        } else {
+            return std::nullopt;
         }
     }
 
@@ -75,18 +92,22 @@ namespace bbwidgets {
 
     Led::Led(LedState const& state, QWidget* const parent)
         : QWidget(parent)
-        , state_(state)
+        , hue_(state.hue())
+        , check_(state.isChecked())
     {
+        setEnabled(state.isEnabled());
         setAutoFillBackground(true);
     }
 
     LedState Led::state() const {
-        return state_;
+        return { hue_, check_, isEnabled()};
     }
 
     void Led::setState(LedState const& state) {
-        state_ = state;
-        stateChanged(state_);
+        hue_ = state.hue();
+        check_ = state.isChecked();
+        setEnabled(state.isEnabled());
+        stateChanged();
     }
 
     QSize Led::sizeHint() const {
@@ -98,12 +119,18 @@ namespace bbwidgets {
         auto const [w, h] = QSizeF(size());
         auto const s = std::min(w, h);
         auto const border_square = QRectF(w / 2 - s / 2, h / 2 - s / 2, s, s);
-
-        auto const bg_color = palette().brush(QPalette::Window).color();
-        auto const border_color =
-            bg_color.lightnessF() > 0.5
-            ? bg_color.darker(120)
-            : bg_color.lighter(120);
+        
+        auto const basic_color = [this] {
+            if (hue_) {
+                auto const lightness = check_ ? .4f : .2f;
+                auto const saturation = isEnabled() ? 1.f : .2f;
+                return QColor::fromHslF(*hue_ / 360.f, saturation, lightness);
+            } else {
+                auto const lightness = isEnabled() ? (check_ ? .4f : .2f) : (check_ ? .8f : .6f);
+                return QColor::fromHslF(0.f, 0.f, lightness);
+            }
+        }();
+        auto const border_color = basic_color.darker(150);
 
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
@@ -111,7 +138,6 @@ namespace bbwidgets {
         painter.setBrush(border_color);
         painter.drawEllipse(border_square);
 
-        auto const basic_color = state_.color();
         auto const basic_square = border_square.adjusted(s * 0.1, s * 0.1, s * -0.1, s * -0.1);
 
         auto const basic_from = border_square.topLeft() + QPoint(0, s * 0.1);
@@ -132,5 +158,12 @@ namespace bbwidgets {
         painter.drawEllipse(glare_rect);
     }
 
+    void Led::changeEvent(QEvent* event) {
+        switch (event->type()) {
+        case QEvent::EnabledChange:
+            update();
+            break;
+        }
+    }
 
 }
