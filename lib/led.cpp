@@ -50,7 +50,7 @@ namespace bbwidgets {
         return { s, s };
     }
 
-    void Led::paintEvent(QPaintEvent* event) {
+    void Led::paintEvent(QPaintEvent*) {
         auto const [w, h] = QSizeF(size());
         auto const s = std::min(w, h);
         auto const border_square = QRectF(w / 2 - s / 2, h / 2 - s / 2, s, s);
