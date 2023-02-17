@@ -3,6 +3,8 @@
 
 #include <bbwidgets/led.hpp>
 
+#include <ranges>
+
 
 int main(int argc, char** argv){
     QApplication app(argc, argv);
@@ -12,13 +14,10 @@ int main(int argc, char** argv){
     auto const layout = new QVBoxLayout{};
     window.setLayout(layout);
 
-    layout->addWidget(new bbwidgets::Led{});
-    layout->addWidget(new bbwidgets::Led{ QColor(Qt::green) });
-    layout->addWidget(new bbwidgets::Led{ QColor(0, 255, 0) });
-    layout->addWidget(new bbwidgets::Led{ Qt::green });
-    layout->addWidget(new bbwidgets::Led{ Qt::red });
-    layout->addWidget(new bbwidgets::Led{ Qt::blue });
-    layout->addWidget(new bbwidgets::Led{ Qt::yellow });
+    auto const count = 12;
+    for (auto const i : std::views::iota(0, count - 1)) {
+        layout->addWidget(new bbwidgets::Led{1.f / count * i});
+    }
 
     window.show();
 

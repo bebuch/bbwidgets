@@ -38,7 +38,7 @@ namespace bbwidgets {
     }
 
     QColor Led::color() const {
-        return QColor::fromHslF(hsl_hue_, 1.f, .45f);
+        return QColor::fromHslF(hsl_hue_, 1.f, .4f);
     }
 
     void Led::setColor(QColor const& color) {
@@ -73,11 +73,19 @@ namespace bbwidgets {
         auto const basic_from = border_square.topLeft() + QPoint(0, s * 0.1);
         auto const basic_to = border_square.bottomLeft();
 
-        QLinearGradient gradient(basic_from, basic_to);
-        gradient.setColorAt(0.0, basic_color);
-        gradient.setColorAt(1.0, basic_color.lighter(220));
-        painter.setBrush(gradient);
+        auto basic_gradient = QLinearGradient(basic_from, basic_to);
+        basic_gradient.setColorAt(0.0, basic_color);
+        basic_gradient.setColorAt(1.0, basic_color.lighter(220));
+        painter.setBrush(basic_gradient);
         painter.drawEllipse(basic_square);
+
+        auto const glare_rect = basic_square.adjusted(s * 0.1, s * 0.1, s * -0.1, s * -0.3);
+
+        auto glare_gradient = QLinearGradient(basic_from, basic_to);
+        glare_gradient.setColorAt(0.0, basic_color.lighter(280));
+        glare_gradient.setColorAt(1.0, basic_color.lighter(180));
+        painter.setBrush(glare_gradient);
+        painter.drawEllipse(glare_rect);
     }
 
 
