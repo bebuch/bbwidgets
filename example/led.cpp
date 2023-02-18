@@ -20,8 +20,8 @@ int main(int argc, char** argv){
     auto const checks = { true, false };
     auto const enables = { true, false };
 
-    for (auto check : checks) {
-        for (auto enable : enables) {
+    for (auto enable : enables) {
+        for (auto check : checks) {
             auto const layout = new QHBoxLayout{};
             main_layout->addLayout(layout);
 

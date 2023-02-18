@@ -12,14 +12,17 @@ namespace bbwidgets {
 
     class DLLEXPORT LedState {
     public:
-        LedState(std::optional<int> hue = std::nullopt, bool state = false, bool enabled = true);
-        LedState(int hue, bool state = false, bool enabled = true);
-        LedState(QColor const& color, bool state = false, bool enabled = true);
-        LedState(Qt::GlobalColor color, bool state = false, bool enabled = true);
+        LedState(std::optional<int> hue = std::nullopt, bool checked = false, bool enabled = true);
+        LedState(int hue, bool checked = false, bool enabled = true);
+        LedState(QColor const& color, bool checked = false, bool enabled = true);
+        LedState(Qt::GlobalColor color, bool checked = false, bool enabled = true);
 
         void unsetHue();
         void setHue(std::optional<int> hue);
         void setHueBy(QColor const& color);
+
+        void setChecked(bool checked);
+        void setEnabled(bool enabled);
 
         std::optional<int> hue() const;
         bool isChecked() const;
@@ -54,7 +57,7 @@ namespace bbwidgets {
 
     private:
         std::optional<int> hue_;
-        bool check_;
+        bool checked_;
     };
 
 
