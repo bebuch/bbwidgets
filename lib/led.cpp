@@ -1,38 +1,28 @@
-﻿#include "../include/bbwidgets/led.hpp"
+#include "../include/bbwidgets/led.hpp"
 
-#include <QFontMetrics> 
-#include <QPainter>
 #include <QEvent>
+#include <QFontMetrics>
+#include <QPainter>
 
 #include <algorithm>
 #include <cmath>
 
-
 namespace bbwidgets {
 
 
-
-    static void drawLedImpl(
-        QPainter& painter,
-        QRectF const& pos,
-        std::optional<int> const hue,
-        float const activation,
-        bool const enabled
-    ) noexcept {
+    static void drawLedImpl(QPainter& painter, QRectF const& pos, std::optional<int> const hue, float const activation,
+        bool const enabled) noexcept {
         auto const [w, h] = pos.size();
         auto const s = std::min(w, h);
         auto const border_square = QRectF(w / 2 - s / 2, h / 2 - s / 2, s, s);
 
         auto const basic_color = [hue, enabled, activation] {
-            if (hue) {
+            if(hue) {
                 auto const lightness = std::lerp(.2f, .4f, activation);
                 auto const saturation = enabled ? 1.f : .15f;
                 return QColor::fromHslF(*hue / 360.f, saturation, lightness);
-            }
-            else {
-                auto const lightness = enabled
-                    ? std::lerp(.2f, .4f, activation)
-                    : std::lerp(.6f, .8f, activation);
+            } else {
+                auto const lightness = enabled ? std::lerp(.2f, .4f, activation) : std::lerp(.6f, .8f, activation);
                 return QColor::fromHslF(0.f, 0.f, lightness);
             }
         }();
@@ -55,7 +45,7 @@ namespace bbwidgets {
         painter.setBrush(basic_gradient);
         painter.drawEllipse(basic_square);
 
-        if (activation > 0.f) {
+        if(activation > 0.f) {
             auto const glare_rect = basic_square.adjusted(s * 0.1, s * 0.1, s * -0.1, s * -0.3);
 
             auto glare_gradient = QLinearGradient(basic_from, basic_to);
@@ -66,33 +56,24 @@ namespace bbwidgets {
         }
     }
 
-    void drawLed(
-        QPainter& painter,
-        QRectF const& pos,
-        std::optional<int> const hue,
-        float const activation,
-        bool const enabled
-    ) noexcept {
+    void drawLed(QPainter& painter, QRectF const& pos, std::optional<int> const hue, float const activation,
+        bool const enabled) noexcept {
         drawLedImpl(painter, pos, LedState::normalized(hue), std::clamp(activation, 0.f, 1.f), enabled);
     }
 
     LedState::LedState(std::optional<int> const hue, bool const checked, bool const enabled) noexcept
         : hue_(normalized(hue))
         , checked_(checked)
-        , enabled_(enabled)
-        {}
+        , enabled_(enabled) {}
 
     LedState::LedState(int const hue, bool const checked, bool const enabled) noexcept
-        : LedState(std::optional(hue), checked, enabled)
-        {}
+        : LedState(std::optional(hue), checked, enabled) {}
 
     LedState::LedState(QColor const& color, bool const checked, bool const enabled) noexcept
-        : LedState(toHue(color), checked, enabled)
-        {}
+        : LedState(toHue(color), checked, enabled) {}
 
     LedState::LedState(Qt::GlobalColor const color, bool const checked, bool const enabled) noexcept
-        : LedState(QColor(color), checked, enabled)
-        {}
+        : LedState(QColor(color), checked, enabled) {}
 
     void LedState::unsetHue() noexcept {
         hue_.reset();
@@ -127,7 +108,7 @@ namespace bbwidgets {
     }
 
     std::optional<int> LedState::toHue(QColor const& color) noexcept {
-        if (color.hslSaturation() == 0) {
+        if(color.hslSaturation() == 0) {
             return std::nullopt;
         } else {
             return color.hue();
@@ -135,29 +116,26 @@ namespace bbwidgets {
     }
 
     std::optional<int> LedState::normalized(std::optional<int> const hue) noexcept {
-        if (hue) {
+        if(hue) {
             return cyclic_adapt(*hue, 0, 360);
         } else {
             return std::nullopt;
         }
     }
 
-
     Led::Led(QWidget* const parent) noexcept
-        : Led(LedState{}, parent)
-        {}
+        : Led(LedState{}, parent) {}
 
     Led::Led(LedState const& state, QWidget* const parent) noexcept
         : QWidget(parent)
         , hue_(state.hue())
-        , checked_(state.isChecked())
-    {
+        , checked_(state.isChecked()) {
         setEnabled(state.isEnabled());
         setAutoFillBackground(true);
     }
 
     LedState Led::state() const noexcept {
-        return { hue_, checked_, isEnabled()};
+        return {hue_, checked_, isEnabled()};
     }
 
     void Led::setState(LedState const& state) noexcept {
@@ -168,8 +146,8 @@ namespace bbwidgets {
     }
 
     QSize Led::sizeHint() const {
-        auto const s = QFontMetrics{ {} }.height();
-        return { s, s };
+        auto const s = QFontMetrics{{}}.height();
+        return {s, s};
     }
 
     void Led::paintEvent(QPaintEvent*) {
@@ -178,10 +156,10 @@ namespace bbwidgets {
     }
 
     void Led::changeEvent(QEvent* event) {
-        switch (event->type()) {
-        case QEvent::EnabledChange:
-            update();
-            break;
+        switch(event->type()) {
+            case QEvent::EnabledChange:
+                update();
+                break;
         }
     }
 

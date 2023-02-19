@@ -1,6 +1,5 @@
 #include "../include/bbwidgets/globals.hpp"
 
-
 namespace bbwidgets {
 
 

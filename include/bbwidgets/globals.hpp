@@ -20,7 +20,7 @@ namespace bbwidgets {
         auto const diff = end - begin;
         auto const based = value - begin;
         auto mod = based % diff;
-        if (mod < 0) {
+        if(mod < 0) {
             mod += diff;
         }
         return begin + mod;

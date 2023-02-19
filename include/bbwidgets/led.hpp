@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "globals.hpp"
 
@@ -6,16 +6,11 @@
 
 #include <optional>
 
-
 namespace bbwidgets {
 
 
     DLLEXPORT void drawLed(
-        QPainter& painter,
-        QRectF const& pos,
-        std::optional<int> hue,
-        float activation,
-        bool enabled) noexcept;
+        QPainter& painter, QRectF const& pos, std::optional<int> hue, float activation, bool enabled) noexcept;
 
     class DLLEXPORT LedState {
     public:
@@ -44,7 +39,7 @@ namespace bbwidgets {
         bool enabled_;
     };
 
-    class DLLEXPORT Led : public QWidget {
+    class DLLEXPORT Led: public QWidget {
         Q_OBJECT
 
     public:
