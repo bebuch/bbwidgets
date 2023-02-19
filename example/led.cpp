@@ -1,7 +1,7 @@
+#include <bbwidgets/led.hpp>
+
 #include <QApplication>
 #include <QVBoxLayout>
-
-#include <bbwidgets/led.hpp>
 
 #include <ranges>
 

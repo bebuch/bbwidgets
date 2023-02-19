@@ -1,10 +1,10 @@
 ﻿#pragma once
 
+#include "globals.hpp"
+
 #include <QWidget>
 
 #include <optional>
-
-#include "globals.hpp"
 
 
 namespace bbwidgets {

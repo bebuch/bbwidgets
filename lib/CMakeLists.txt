@@ -19,5 +19,14 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         $<TARGET_FILE:Qt6::QWindowsIntegrationPlugin>
         $<TARGET_FILE_DIR:${PROJECT_NAME}>/platforms)
-
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
+        
+install(TARGETS
+    ${PROJECT_NAME}
+    RUNTIME DESTINATION bin)
+install(FILES
+    $<TARGET_FILE:Qt6::Widgets>
+    $<TARGET_FILE:Qt6::Gui>
+    $<TARGET_FILE:Qt6::Core>
+    DESTINATION bin)
+install(DIRECTORY $<TARGET_FILE_DIR:${PROJECT_NAME}>/platforms
+    DESTINATION bin)

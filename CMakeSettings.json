@@ -8,18 +8,13 @@
       "buildRoot": "${projectDir}\\out\\build\\${name}",
       "installRoot": "${projectDir}\\out\\install\\${name}",
       "cmakeCommandArgs": "",
-      "buildCommandArgs": "",
+      "buildCommandArgs": "install",
       "ctestCommandArgs": "",
       "variables": [
         {
           "name": "CMAKE_PREFIX_PATH",
           "value": "C:\\Qt\\6.4.2\\msvc2019_64",
           "type": "FILEPATH"
-        },
-        {
-          "name": "CMAKE_VS_INCLUDE_INSTALL_TO_DEFAULT_BUILD",
-          "value": "True",
-          "type": "BOOL"
         }
       ]
     }
