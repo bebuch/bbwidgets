@@ -10,26 +10,33 @@
 namespace bbwidgets {
 
 
+    DLLEXPORT void drawLed(
+        QPainter& painter,
+        QRectF const& pos,
+        std::optional<int> hue,
+        float activation,
+        bool enabled) noexcept;
+
     class DLLEXPORT LedState {
     public:
-        LedState(std::optional<int> hue = std::nullopt, bool checked = false, bool enabled = true);
-        LedState(int hue, bool checked = false, bool enabled = true);
-        LedState(QColor const& color, bool checked = false, bool enabled = true);
-        LedState(Qt::GlobalColor color, bool checked = false, bool enabled = true);
+        LedState(std::optional<int> hue = std::nullopt, bool checked = false, bool enabled = true) noexcept;
+        LedState(int hue, bool checked = false, bool enabled = true) noexcept;
+        LedState(QColor const& color, bool checked = false, bool enabled = true) noexcept;
+        LedState(Qt::GlobalColor color, bool checked = false, bool enabled = true) noexcept;
 
-        void unsetHue();
-        void setHue(std::optional<int> hue);
-        void setHueBy(QColor const& color);
+        void unsetHue() noexcept;
+        void setHue(std::optional<int> hue) noexcept;
+        void setHueBy(QColor const& color) noexcept;
 
-        void setChecked(bool checked);
-        void setEnabled(bool enabled);
+        void setChecked(bool checked) noexcept;
+        void setEnabled(bool enabled) noexcept;
 
-        std::optional<int> hue() const;
-        bool isChecked() const;
-        bool isEnabled() const;
+        [[nodiscard]] std::optional<int> hue() const noexcept;
+        [[nodiscard]] bool isChecked() const noexcept;
+        [[nodiscard]] bool isEnabled() const noexcept;
 
-        static std::optional<int> toHue(QColor const& color);
-        static std::optional<int> normalized(std::optional<int> const hue);
+        static [[nodiscard]] std::optional<int> toHue(QColor const& color) noexcept;
+        static [[nodiscard]] std::optional<int> normalized(std::optional<int> const hue) noexcept;
 
     private:
         std::optional<int> hue_;
@@ -41,17 +48,17 @@ namespace bbwidgets {
         Q_OBJECT
 
     public:
-        Led(QWidget* parent = nullptr);
-        Led(LedState const& state, QWidget* parent = nullptr);
+        Led(QWidget* parent = nullptr) noexcept;
+        Led(LedState const& state, QWidget* parent = nullptr) noexcept;
 
-        LedState state() const;
-        void setState(LedState const& state);
+        [[nodiscard]] LedState state() const noexcept;
+        void setState(LedState const& state) noexcept;
 
     signals:
         void stateChanged();
 
     protected:
-        QSize sizeHint() const override;
+        [[nodiscard]] QSize sizeHint() const override;
         void paintEvent(QPaintEvent* event) override;
         void changeEvent(QEvent* event) override;
 
