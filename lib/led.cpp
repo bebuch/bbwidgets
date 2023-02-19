@@ -25,14 +25,14 @@ namespace bbwidgets {
 
         auto const basic_color = [hue, enabled, activation] {
             if (hue) {
-                auto const lightness = std::lerp(.4f, .2f, activation);
+                auto const lightness = std::lerp(.2f, .4f, activation);
                 auto const saturation = enabled ? 1.f : .15f;
                 return QColor::fromHslF(*hue / 360.f, saturation, lightness);
             }
             else {
                 auto const lightness = enabled
-                    ? std::lerp(.4f, .2f, activation)
-                    : std::lerp(.8f, .6f, activation);
+                    ? std::lerp(.2f, .4f, activation)
+                    : std::lerp(.6f, .8f, activation);
                 return QColor::fromHslF(0.f, 0.f, lightness);
             }
         }();
