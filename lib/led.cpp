@@ -14,7 +14,7 @@ namespace bbwidgets {
         bool const enabled) noexcept {
         auto const [w, h] = pos.size();
         auto const s = std::min(w, h);
-        auto const border_square = QRectF(w / 2 - s / 2, h / 2 - s / 2, s, s);
+        auto const border_rect = QRectF(w / 2 - s / 2, h / 2 - s / 2, s, s);
 
         auto const basic_color = [hue, enabled, activation] {
             if(hue) {
@@ -31,26 +31,29 @@ namespace bbwidgets {
         painter.setRenderHint(QPainter::Antialiasing);
         painter.setPen(Qt::NoPen);
         painter.setBrush(border_color);
-        painter.drawEllipse(border_square);
+        painter.drawEllipse(border_rect);
 
-        auto const basic_square = border_square.adjusted(s * 0.1, s * 0.1, s * -0.1, s * -0.1);
+        auto const basic_rect = border_rect.adjusted(s * 0.1, s * 0.1, s * -0.1, s * -0.1);
 
-        auto const basic_from = border_square.topLeft() + QPoint(0, s * 0.1);
-        auto const basic_to = border_square.bottomLeft();
+        auto const basic_from = border_rect.topLeft() + QPoint(0, s * 0.1);
+        auto const basic_to = border_rect.bottomLeft();
 
         auto basic_gradient = QLinearGradient(basic_from, basic_to);
         auto const base_color_light = enabled ? 150 : 250;
         basic_gradient.setColorAt(0.0, basic_color.lighter(std::lerp(base_color_light, 0, activation)));
         basic_gradient.setColorAt(1.0, basic_color.lighter(std::lerp(base_color_light, 220, activation)));
         painter.setBrush(basic_gradient);
-        painter.drawEllipse(basic_square);
+        painter.drawEllipse(basic_rect);
 
         if(activation > 0.f) {
-            auto const glare_rect = basic_square.adjusted(s * 0.1, s * 0.1, s * -0.1, s * -0.3);
+            auto const fgr = basic_rect.adjusted(s * 0.1, s * 0.1, s * -0.1, s * -0.3);
+            auto const glare_rect = fgr.adjusted(std::lerp(.3f, 0.f, activation) * fgr.width(),
+                std::lerp(1.f / 3, 0.f, activation) * fgr.height(), std::lerp(.3f, 0.f, activation) * -fgr.width(),
+                std::lerp(2.f / 3, 0.f, activation) * -fgr.height());
 
             auto glare_gradient = QLinearGradient(basic_from, basic_to);
-            glare_gradient.setColorAt(0.0, basic_color.lighter(280));
-            glare_gradient.setColorAt(1.0, basic_color.lighter(180));
+            glare_gradient.setColorAt(0.0, basic_color.lighter(std::lerp(base_color_light, 280, activation)));
+            glare_gradient.setColorAt(1.0, basic_color.lighter(std::lerp(base_color_light, 180, activation)));
             painter.setBrush(glare_gradient);
             painter.drawEllipse(glare_rect);
         }
