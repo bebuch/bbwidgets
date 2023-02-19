@@ -1,4 +1,4 @@
-﻿{
+{
   "configurations": [
     {
       "name": "x64-Debug",
@@ -9,14 +9,7 @@
       "installRoot": "${projectDir}\\out\\install\\${name}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "install",
-      "ctestCommandArgs": "",
-      "variables": [
-        {
-          "name": "CMAKE_PREFIX_PATH",
-          "value": "C:\\Qt\\6.4.2\\msvc2019_64",
-          "type": "FILEPATH"
-        }
-      ]
+      "ctestCommandArgs": ""
     }
   ]
 }
