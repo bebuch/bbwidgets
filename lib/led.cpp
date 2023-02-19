@@ -64,19 +64,18 @@ namespace bbwidgets {
         drawLedImpl(painter, pos, LedState::normalized(hue), std::clamp(activation, 0.f, 1.f), enabled);
     }
 
-    LedState::LedState(std::optional<int> const hue, bool const checked, bool const enabled) noexcept
+    LedState::LedState(std::optional<int> const hue, bool const checked) noexcept
         : hue_(normalized(hue))
-        , checked_(checked)
-        , enabled_(enabled) {}
+        , checked_(checked) {}
 
-    LedState::LedState(int const hue, bool const checked, bool const enabled) noexcept
-        : LedState(std::optional(hue), checked, enabled) {}
+    LedState::LedState(int const hue, bool const checked) noexcept
+        : LedState(std::optional(hue), checked) {}
 
-    LedState::LedState(QColor const& color, bool const checked, bool const enabled) noexcept
-        : LedState(toHue(color), checked, enabled) {}
+    LedState::LedState(QColor const& color, bool const checked) noexcept
+        : LedState(toHue(color), checked) {}
 
-    LedState::LedState(Qt::GlobalColor const color, bool const checked, bool const enabled) noexcept
-        : LedState(QColor(color), checked, enabled) {}
+    LedState::LedState(Qt::GlobalColor const color, bool const checked) noexcept
+        : LedState(QColor(color), checked) {}
 
     void LedState::unsetHue() noexcept {
         hue_.reset();
@@ -94,20 +93,12 @@ namespace bbwidgets {
         checked_ = checked;
     }
 
-    void LedState::setEnabled(bool const enabled) noexcept {
-        enabled_ = enabled;
-    }
-
     std::optional<int> LedState::hue() const noexcept {
         return hue_;
     }
 
     bool LedState::isChecked() const noexcept {
         return checked_;
-    }
-
-    bool LedState::isEnabled() const noexcept {
-        return enabled_;
     }
 
     std::optional<int> LedState::toHue(QColor const& color) noexcept {
@@ -133,18 +124,16 @@ namespace bbwidgets {
         : QWidget(parent)
         , hue_(state.hue())
         , checked_(state.isChecked()) {
-        setEnabled(state.isEnabled());
         setAutoFillBackground(true);
     }
 
     LedState Led::state() const noexcept {
-        return {hue_, checked_, isEnabled()};
+        return {hue_, checked_};
     }
 
     void Led::setState(LedState const& state) noexcept {
         hue_ = state.hue();
         checked_ = state.isChecked();
-        setEnabled(state.isEnabled());
         stateChanged();
     }
 

@@ -14,21 +14,19 @@ namespace bbwidgets {
 
     class DLLEXPORT LedState {
     public:
-        LedState(std::optional<int> hue = std::nullopt, bool checked = false, bool enabled = true) noexcept;
-        LedState(int hue, bool checked = false, bool enabled = true) noexcept;
-        LedState(QColor const& color, bool checked = false, bool enabled = true) noexcept;
-        LedState(Qt::GlobalColor color, bool checked = false, bool enabled = true) noexcept;
+        LedState(std::optional<int> hue = std::nullopt, bool checked = false) noexcept;
+        LedState(int hue, bool checked = false) noexcept;
+        LedState(QColor const& color, bool checked = false) noexcept;
+        LedState(Qt::GlobalColor color, bool checked = false) noexcept;
 
         void unsetHue() noexcept;
         void setHue(std::optional<int> hue) noexcept;
         void setHueBy(QColor const& color) noexcept;
 
         void setChecked(bool checked) noexcept;
-        void setEnabled(bool enabled) noexcept;
 
         [[nodiscard]] std::optional<int> hue() const noexcept;
         [[nodiscard]] bool isChecked() const noexcept;
-        [[nodiscard]] bool isEnabled() const noexcept;
 
         static [[nodiscard]] std::optional<int> toHue(QColor const& color) noexcept;
         static [[nodiscard]] std::optional<int> normalized(std::optional<int> const hue) noexcept;
@@ -36,7 +34,6 @@ namespace bbwidgets {
     private:
         std::optional<int> hue_;
         bool checked_;
-        bool enabled_;
     };
 
     class DLLEXPORT Led: public QWidget {

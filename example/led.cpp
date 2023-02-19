@@ -25,13 +25,21 @@ int main(int argc, char** argv) {
             auto const layout = new QHBoxLayout{};
             main_layout->addLayout(layout);
 
-            layout->addWidget(new bbwidgets::Led{
-                {std::nullopt, check, enable}
-            });
+            layout->addWidget([enable, check] {
+                auto led = new bbwidgets::Led{
+                    {std::nullopt, check}
+                };
+                led->setEnabled(enable);
+                return led;
+            }());
             for(auto const hue: hls_hues) {
-                layout->addWidget(new bbwidgets::Led{
-                    {hue, check, enable}
-                });
+                layout->addWidget([hue, enable, check] {
+                    auto led = new bbwidgets::Led{
+                        {hue, check}
+                    };
+                    led->setEnabled(enable);
+                    return led;
+                }());
             }
         }
     }
