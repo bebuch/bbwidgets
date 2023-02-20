@@ -14,37 +14,28 @@ namespace bbwidgets {
 
     class DLLEXPORT LedState {
     public:
-        LedState(std::optional<int> hue, float activation) noexcept;
         LedState(std::optional<int> hue = std::nullopt, bool checked = false) noexcept;
-        LedState(int hue, float activation) noexcept;
-        LedState(int hue, bool checked = false) noexcept;
-        LedState(QColor const& color, float activation) noexcept;
-        LedState(QColor const& color, bool checked = false) noexcept;
-        LedState(Qt::GlobalColor color, float activation) noexcept;
-        LedState(Qt::GlobalColor color, bool checked = false) noexcept;
+        LedState(int hue, float saturation, float activation, bool checked) noexcept;
         LedState(LedState const&) noexcept;
 
         ~LedState();
 
         LedState& operator=(LedState const&) noexcept;
 
-        void unsetHue() noexcept;
         void setHue(std::optional<int> hue) noexcept;
-        void setHueBy(QColor const& color) noexcept;
-
-        void setActivation(float activation) noexcept;
         void setChecked(bool checked) noexcept;
 
-        [[nodiscard]] std::optional<int> hue() const noexcept;
-        [[nodiscard]] float activation() const noexcept;
         [[nodiscard]] bool isChecked() const noexcept;
 
-        static [[nodiscard]] std::optional<int> toHue(QColor const& color) noexcept;
-        static [[nodiscard]] std::optional<int> normalized(std::optional<int> const hue) noexcept;
+        void draw(QPainter& painter, QRectF const& pos, bool enabled) const noexcept;
+
+        [[nodiscard]] LedState lerp(LedState const& b, float t) const noexcept;
 
     private:
-        std::optional<int> hue_;
+        int hue_;
+        float saturation_;
         float activation_;
+        bool checked_;
     };
 
     class DLLEXPORT Led: public QWidget {

@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
     auto const main_layout = new QVBoxLayout{};
     window.setLayout(main_layout);
 
-    auto const count = 12;
+    auto const count = 6;
     std::vector<std::optional<int>> hues{std::nullopt};
     std::ranges::copy(std::views::iota(0, count) | std::views::transform([count](int const i) {
         return static_cast<int>(std::round(360.f / count * i));
@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
                     anim->setDuration(1000);
                     anim->setEasingCurve(QEasingCurve::InOutQuart);
                     anim->setStartValue(QVariant::fromValue(bbwidgets::LedState{hue, check}));
-                    anim->setEndValue(QVariant::fromValue(bbwidgets::LedState{hue, !check}));
+                    anim->setEndValue(QVariant::fromValue(bbwidgets::LedState{hue ? *hue + 360 / count : 120, !check}));
                     anim->start();
 
                     anim->connect(anim, &QPropertyAnimation::finished, [anim] {
