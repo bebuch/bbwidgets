@@ -14,18 +14,29 @@ namespace bbwidgets {
 
     class DLLEXPORT LedState {
     public:
+        LedState(std::optional<int> hue, float activation) noexcept;
         LedState(std::optional<int> hue = std::nullopt, bool checked = false) noexcept;
+        LedState(int hue, float activation) noexcept;
         LedState(int hue, bool checked = false) noexcept;
+        LedState(QColor const& color, float activation) noexcept;
         LedState(QColor const& color, bool checked = false) noexcept;
+        LedState(Qt::GlobalColor color, float activation) noexcept;
         LedState(Qt::GlobalColor color, bool checked = false) noexcept;
+        LedState(LedState const&) noexcept;
+
+        ~LedState();
+
+        LedState& operator=(LedState const&) noexcept;
 
         void unsetHue() noexcept;
         void setHue(std::optional<int> hue) noexcept;
         void setHueBy(QColor const& color) noexcept;
 
+        void setActivation(float activation) noexcept;
         void setChecked(bool checked) noexcept;
 
         [[nodiscard]] std::optional<int> hue() const noexcept;
+        [[nodiscard]] float activation() const noexcept;
         [[nodiscard]] bool isChecked() const noexcept;
 
         static [[nodiscard]] std::optional<int> toHue(QColor const& color) noexcept;
@@ -33,11 +44,12 @@ namespace bbwidgets {
 
     private:
         std::optional<int> hue_;
-        bool checked_;
+        float activation_;
     };
 
     class DLLEXPORT Led: public QWidget {
         Q_OBJECT
+        Q_PROPERTY(LedState state READ state WRITE setState NOTIFY stateChanged)
 
     public:
         Led(QWidget* parent = nullptr) noexcept;
@@ -47,7 +59,7 @@ namespace bbwidgets {
         void setState(LedState const& state) noexcept;
 
     signals:
-        void stateChanged();
+        void stateChanged(LedState const& state);
 
     protected:
         [[nodiscard]] QSize sizeHint() const override;
@@ -55,9 +67,10 @@ namespace bbwidgets {
         void changeEvent(QEvent* event) override;
 
     private:
-        std::optional<int> hue_;
-        bool checked_;
+        LedState state_;
     };
 
 
 }
+
+Q_DECLARE_METATYPE(bbwidgets::LedState);

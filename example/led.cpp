@@ -1,6 +1,7 @@
 #include <bbwidgets/led.hpp>
 
 #include <QApplication>
+#include <QPropertyAnimation>
 #include <QVBoxLayout>
 
 #include <ranges>
@@ -14,10 +15,12 @@ int main(int argc, char** argv) {
     window.setLayout(main_layout);
 
     auto const count = 12;
-    auto const hls_hues = std::views::iota(0, count) | std::views::transform([count](int const i) {
+    std::vector<std::optional<int>> hues{std::nullopt};
+    std::ranges::copy(std::views::iota(0, count) | std::views::transform([count](int const i) {
         return static_cast<int>(std::round(360.f / count * i));
-    });
-    auto const checks = {true, false};
+    }),
+        std::back_inserter(hues));
+    auto const checks = {false, true};
     auto const enables = {true, false};
 
     for(auto enable: enables) {
@@ -25,19 +28,25 @@ int main(int argc, char** argv) {
             auto const layout = new QHBoxLayout{};
             main_layout->addLayout(layout);
 
-            layout->addWidget([enable, check] {
-                auto led = new bbwidgets::Led{
-                    {std::nullopt, check}
-                };
-                led->setEnabled(enable);
-                return led;
-            }());
-            for(auto const hue: hls_hues) {
+            for(auto const hue: hues) {
                 layout->addWidget([hue, enable, check] {
                     auto led = new bbwidgets::Led{
                         {hue, check}
                     };
                     led->setEnabled(enable);
+
+                    QPropertyAnimation* anim = new QPropertyAnimation(led, "state", led);
+                    anim->setDuration(1000);
+                    anim->setEasingCurve(QEasingCurve::InOutQuart);
+                    anim->setStartValue(QVariant::fromValue(bbwidgets::LedState{hue, check}));
+                    anim->setEndValue(QVariant::fromValue(bbwidgets::LedState{hue, !check}));
+                    anim->start();
+
+                    anim->connect(anim, &QPropertyAnimation::finished, [anim] {
+                        anim->setDirection(QPropertyAnimation::Direction(!anim->direction()));
+                        anim->start();
+                    });
+
                     return led;
                 }());
             }
