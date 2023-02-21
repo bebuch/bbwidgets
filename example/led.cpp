@@ -1,18 +1,26 @@
-#include <bbwidgets/Led.hpp>
+#include <bbwidgets/LedDualState.hpp>
 
 #include <QApplication>
-#include <QPropertyAnimation>
+#include <QPushButton>
 #include <QVBoxLayout>
 
 #include <ranges>
 
 int main(int argc, char** argv) {
+    using namespace std::literals;
+
     QApplication app(argc, argv);
 
     QWidget window;
 
     auto const main_layout = new QVBoxLayout{};
     window.setLayout(main_layout);
+
+    auto const change_enable = new QPushButton("enable");
+    main_layout->addWidget(change_enable);
+
+    auto const change_state = new QPushButton("state");
+    main_layout->addWidget(change_state);
 
     auto const count = 6;
     std::vector<std::optional<int>> hues{std::nullopt};
@@ -23,28 +31,27 @@ int main(int argc, char** argv) {
     auto const checks = {false, true};
     auto const enables = {true, false};
 
-    for(auto enable: enables) {
-        for(auto check: checks) {
+    for(auto check: checks) {
+        for(auto enable: enables) {
             auto const layout = new QHBoxLayout{};
             main_layout->addLayout(layout);
 
             for(auto const hue: hues) {
-                layout->addWidget([hue, enable, check] {
-                    auto led = new bbwidgets::Led{
-                        {hue, check}
-                    };
+                layout->addWidget([change_enable, change_state, hue, enable, check] {
+                    auto led = new bbwidgets::LedDualState{hue, hue ? *hue + 360 / count : 120};
                     led->setEnabled(enable);
+                    led->setChecked(check);
+                    led->setAnimationDuration(1000ms);
+                    led->setAnimationEasingCurve(QEasingCurve::InOutQuart);
 
-                    QPropertyAnimation* anim = new QPropertyAnimation(led, "style", led);
-                    anim->setDuration(1000);
-                    anim->setEasingCurve(QEasingCurve::InOutQuart);
-                    anim->setStartValue(QVariant::fromValue(bbwidgets::LedStyle{hue, check}));
-                    anim->setEndValue(QVariant::fromValue(bbwidgets::LedStyle{hue ? *hue + 360 / count : 120, !check}));
-                    anim->start();
+                    change_enable->connect(change_enable, &QPushButton::clicked, [led, enable]() mutable {
+                        enable = !enable;
+                        led->setEnabled(enable);
+                    });
 
-                    anim->connect(anim, &QPropertyAnimation::finished, [anim] {
-                        anim->setDirection(QPropertyAnimation::Direction(!anim->direction()));
-                        anim->start();
+                    change_state->connect(change_state, &QPushButton::clicked, [led, check]() mutable {
+                        check = !check;
+                        led->setChecked(check);
                     });
 
                     return led;

@@ -4,8 +4,6 @@
 
 #include <QWidget>
 
-#include <optional>
-
 namespace bbwidgets {
 
 
