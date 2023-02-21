@@ -9,6 +9,7 @@ namespace bbwidgets {
 
     class DLLEXPORT LedDualState: public LedAnimated {
         Q_OBJECT
+        Q_PROPERTY(bool checked READ isChecked WRITE setChecked)
 
     public:
         LedDualState(QWidget* parent = nullptr) noexcept;
