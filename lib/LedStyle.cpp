@@ -20,10 +20,8 @@ namespace bbwidgets {
         return QVariant::fromValue(start.lerp(end, static_cast<float>(progress)));
     }
 
-    void LedStyle::draw(QPainter& painter, QRectF const& pos, bool const enabled) const noexcept {
-        auto const [w, h] = pos.size();
-        auto const s = std::min(w, h);
-        auto const border_rect = QRectF(w / 2 - s / 2, h / 2 - s / 2, s, s);
+    void LedStyle::draw(QPainter& painter, QRectF const& rect, bool const enabled) const noexcept {
+        auto const [w, h] = rect.size();
 
         auto const basic_color = [this, enabled] {
             auto const lightness = std::lerp(.2f, .4f, activation_);
@@ -35,12 +33,12 @@ namespace bbwidgets {
         painter.setRenderHint(QPainter::Antialiasing);
         painter.setPen(Qt::NoPen);
         painter.setBrush(border_color);
-        painter.drawEllipse(border_rect);
+        painter.drawEllipse(rect);
 
-        auto const basic_rect = border_rect.adjusted(s * 0.1, s * 0.1, s * -0.1, s * -0.1);
+        auto const basic_rect = rect.adjusted(w * 0.1, h * 0.1, w * -0.1, h * -0.1);
 
-        auto const basic_from = border_rect.topLeft() + QPoint(0, s * 0.1);
-        auto const basic_to = border_rect.bottomLeft();
+        auto const basic_from = rect.topLeft() + QPoint(0, h * 0.1);
+        auto const basic_to = rect.bottomLeft();
 
         auto basic_gradient = QLinearGradient(basic_from, basic_to);
         auto const lighter = enabled ? 150 : std::lerp(250, 150, saturation_);
@@ -50,7 +48,7 @@ namespace bbwidgets {
         painter.drawEllipse(basic_rect);
 
         if(activation_ > 0.f) {
-            auto const fgr = basic_rect.adjusted(s * 0.1, s * 0.1, s * -0.1, s * -0.3);
+            auto const fgr = basic_rect.adjusted(w * 0.1, h * 0.1, w * -0.1, h * -0.3);
             auto const glare_rect = fgr.adjusted(std::lerp(.3f, 0.f, activation_) * fgr.width(),
                 std::lerp(1.f / 3, 0.f, activation_) * fgr.height(), std::lerp(.3f, 0.f, activation_) * -fgr.width(),
                 std::lerp(2.f / 3, 0.f, activation_) * -fgr.height());
