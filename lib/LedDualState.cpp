@@ -7,7 +7,7 @@ namespace bbwidgets {
         : LedDualState(std::nullopt, parent) {}
 
     LedDualState::LedDualState(std::optional<int> const on_hue, QWidget* const parent) noexcept
-        : LedDualState(on_hue, std::nullopt, parent) {}
+        : LedDualState(on_hue, on_hue, parent) {}
 
     LedDualState::LedDualState(
         std::optional<int> const on_hue, std::optional<int> const off_hue, QWidget* const parent) noexcept
