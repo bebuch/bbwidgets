@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
 
             for(auto const hue: hues) {
                 layout->addWidget([change_enable, change_state, hue, enable, check] {
-                    auto led = new bbwidgets::LedDualState{hue, hue ? *hue + 360 / count : 120};
+                    auto led = new bbwidgets::LedDualState{hue};
                     led->setEnabled(enable);
                     led->setChecked(check);
                     led->setAnimationDuration(1000ms);
