@@ -26,8 +26,7 @@ namespace bbwidgets {
         auto const border_rect = QRectF(w / 2 - s / 2, h / 2 - s / 2, s, s);
 
         auto const basic_color = [this, enabled] {
-            auto const lightness
-                = std::lerp(std::lerp(.4f, .2f, saturation_), std::lerp(.6f, .4f, saturation_), activation_);
+            auto const lightness = std::lerp(.2f, .4f, activation_);
             auto const saturation = enabled ? saturation_ : std::lerp(.0f, .15f, saturation_);
             return QColor::fromHslF(hue_ / 360.f, saturation, lightness);
         }();
@@ -44,9 +43,9 @@ namespace bbwidgets {
         auto const basic_to = border_rect.bottomLeft();
 
         auto basic_gradient = QLinearGradient(basic_from, basic_to);
-        auto const base_color_light = enabled ? 150 : 250;
-        basic_gradient.setColorAt(0.0, basic_color.lighter(std::lerp(base_color_light, 100, activation_)));
-        basic_gradient.setColorAt(1.0, basic_color.lighter(std::lerp(base_color_light, 220, activation_)));
+        auto const lighter = enabled ? 150 : std::lerp(250, 150, saturation_);
+        basic_gradient.setColorAt(0.0, basic_color.lighter(std::lerp(lighter, lighter - 50, activation_)));
+        basic_gradient.setColorAt(1.0, basic_color.lighter(std::lerp(lighter, lighter + 70, activation_)));
         painter.setBrush(basic_gradient);
         painter.drawEllipse(basic_rect);
 
@@ -57,8 +56,8 @@ namespace bbwidgets {
                 std::lerp(2.f / 3, 0.f, activation_) * -fgr.height());
 
             auto glare_gradient = QLinearGradient(basic_from, basic_to);
-            glare_gradient.setColorAt(0.0, basic_color.lighter(std::lerp(base_color_light, 280, activation_)));
-            glare_gradient.setColorAt(1.0, basic_color.lighter(std::lerp(base_color_light, 180, activation_)));
+            glare_gradient.setColorAt(0.0, basic_color.lighter(std::lerp(lighter, lighter + 130, activation_)));
+            glare_gradient.setColorAt(1.0, basic_color.lighter(std::lerp(lighter, lighter + 30, activation_)));
             painter.setBrush(glare_gradient);
             painter.drawEllipse(glare_rect);
         }
