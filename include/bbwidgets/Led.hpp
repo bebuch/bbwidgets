@@ -1,6 +1,6 @@
 #pragma once
 
-#include "globals.hpp"
+#include "LedStyle.hpp"
 
 #include <QWidget>
 
@@ -8,26 +8,6 @@
 
 namespace bbwidgets {
 
-
-    class DLLEXPORT LedStyle {
-    public:
-        LedStyle(std::optional<int> hue = std::nullopt, bool checked = false) noexcept;
-        LedStyle(int hue, float saturation, float activation) noexcept;
-        LedStyle(LedStyle const&) noexcept;
-
-        ~LedStyle();
-
-        LedStyle& operator=(LedStyle const&) noexcept;
-
-        void draw(QPainter& painter, QRectF const& pos, bool enabled) const noexcept;
-
-        [[nodiscard]] LedStyle lerp(LedStyle const& b, float t) const noexcept;
-
-    private:
-        int hue_;
-        float saturation_;
-        float activation_;
-    };
 
     class DLLEXPORT Led: public QWidget {
         Q_OBJECT
@@ -51,5 +31,3 @@ namespace bbwidgets {
 
 
 }
-
-Q_DECLARE_METATYPE(bbwidgets::LedStyle);

@@ -1,4 +1,4 @@
-#include <bbwidgets/led.hpp>
+#include <bbwidgets/Led.hpp>
 
 #include <QApplication>
 #include <QPropertyAnimation>

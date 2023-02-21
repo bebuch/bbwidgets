@@ -1,4 +1,4 @@
-#include "../include/bbwidgets/led.hpp"
+#include "../include/bbwidgets/LedStyle.hpp"
 
 #include <QEvent>
 #include <QFontMetrics>
@@ -68,7 +68,7 @@ namespace bbwidgets {
         : hue_(normalizedHue(hue))
         , saturation_(saturation)
         , activation_(activation) {
-        // we need to call qRegisterAnimationInterpolator on first element construction
+        // call qRegisterAnimationInterpolator on first element construction
         static [[maybe_unused]] auto const animation_registered = [] {
             qRegisterAnimationInterpolator<LedStyle>(ledStateInterpolator);
             return true;
@@ -118,41 +118,7 @@ namespace bbwidgets {
 
     LedStyle& LedStyle::operator=(LedStyle const&) noexcept = default;
 
-    Led::Led(QWidget* const parent) noexcept
-        : Led(LedStyle{}, parent) {}
-
-    Led::Led(LedStyle const& state, QWidget* const parent) noexcept
-        : QWidget(parent)
-        , style_(state) {
-        setAutoFillBackground(true);
-    }
-
-    LedStyle Led::style() const noexcept {
-        return style_;
-    }
-
-    void Led::setStyle(LedStyle const& style) noexcept {
-        style_ = style;
-        update();
-    }
-
-    QSize Led::sizeHint() const {
-        auto const s = QFontMetrics{{}}.height();
-        return {s, s};
-    }
-
-    void Led::paintEvent(QPaintEvent*) {
-        QPainter painter(this);
-        style_.draw(painter, rect(), isEnabled());
-    }
-
-    void Led::changeEvent(QEvent* event) {
-        switch(event->type()) {
-            case QEvent::EnabledChange:
-                update();
-                break;
-        }
-    }
-
 
 }
+
+Q_DECLARE_METATYPE(bbwidgets::LedStyle);
