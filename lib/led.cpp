@@ -16,18 +16,18 @@ namespace bbwidgets {
         return cyclic_adapt(hue, 0, 360);
     }
 
-    static QVariant ledStateInterpolator(LedState const& start, LedState const& end, qreal const progress) {
+    static QVariant ledStateInterpolator(LedStyle const& start, LedStyle const& end, qreal const progress) {
         return QVariant::fromValue(start.lerp(end, static_cast<float>(progress)));
     }
 
-    void LedState::draw(QPainter& painter, QRectF const& pos, bool const enabled) const noexcept {
+    void LedStyle::draw(QPainter& painter, QRectF const& pos, bool const enabled) const noexcept {
         auto const [w, h] = pos.size();
         auto const s = std::min(w, h);
         auto const border_rect = QRectF(w / 2 - s / 2, h / 2 - s / 2, s, s);
 
         auto const basic_color = [this, enabled] {
             auto const lightness
-                = std::lerp(std::lerp(.6f, .2f, saturation_), std::lerp(.8f, .4f, saturation_), activation_);
+                = std::lerp(std::lerp(.4f, .2f, saturation_), std::lerp(.6f, .4f, saturation_), activation_);
             auto const saturation = enabled ? saturation_ : std::lerp(.0f, .15f, saturation_);
             return QColor::fromHslF(hue_ / 360.f, saturation, lightness);
         }();
@@ -64,19 +64,18 @@ namespace bbwidgets {
         }
     }
 
-    LedState::LedState(int const hue, float const saturation, float const activation, bool const checked) noexcept
+    LedStyle::LedStyle(int const hue, float const saturation, float const activation) noexcept
         : hue_(normalizedHue(hue))
         , saturation_(saturation)
-        , activation_(activation)
-        , checked_(checked) {
+        , activation_(activation) {
         // we need to call qRegisterAnimationInterpolator on first element construction
         static [[maybe_unused]] auto const animation_registered = [] {
-            qRegisterAnimationInterpolator<LedState>(ledStateInterpolator);
+            qRegisterAnimationInterpolator<LedStyle>(ledStateInterpolator);
             return true;
         }();
     }
 
-    LedState LedState::lerp(LedState const& b, float const t) const noexcept {
+    LedStyle LedStyle::lerp(LedStyle const& b, float const t) const noexcept {
         auto const hue = [&] {
             auto const a_colorfull = saturation_ > 0;
             auto const b_colorfull = b.saturation_ > 0;
@@ -107,48 +106,33 @@ namespace bbwidgets {
         auto const saturation = std::lerp(saturation_, b.saturation_, t);
         auto const activation = std::lerp(activation_, b.activation_, t);
 
-        return LedState(hue, saturation, activation, b.checked_);
+        return LedStyle(hue, saturation, activation);
     }
 
-    LedState::LedState(std::optional<int> const hue, bool const checked) noexcept
-        : LedState(hue ? *hue : 0, hue ? 1.f : 0.f, checked ? 1.f : 0.f, checked) {}
+    LedStyle::LedStyle(std::optional<int> const hue, bool const checked) noexcept
+        : LedStyle(hue ? *hue : 0, hue ? 1.f : 0.f, checked ? 1.f : 0.f) {}
 
-    LedState::LedState(LedState const&) noexcept = default;
+    LedStyle::LedStyle(LedStyle const&) noexcept = default;
 
-    LedState::~LedState() = default;
+    LedStyle::~LedStyle() = default;
 
-    LedState& LedState::operator=(LedState const&) noexcept = default;
-
-    void LedState::setHue(std::optional<int> const hue) noexcept {
-        hue_ = hue ? normalizedHue(*hue) : 0;
-        saturation_ = hue ? 1.f : 0.f;
-    }
-
-    void LedState::setChecked(bool const checked) noexcept {
-        activation_ = checked ? 1.f : 0.f;
-        checked_ = checked;
-    }
-
-    bool LedState::isChecked() const noexcept {
-        return checked_;
-    }
+    LedStyle& LedStyle::operator=(LedStyle const&) noexcept = default;
 
     Led::Led(QWidget* const parent) noexcept
-        : Led(LedState{}, parent) {}
+        : Led(LedStyle{}, parent) {}
 
-    Led::Led(LedState const& state, QWidget* const parent) noexcept
+    Led::Led(LedStyle const& state, QWidget* const parent) noexcept
         : QWidget(parent)
-        , state_(state) {
+        , style_(state) {
         setAutoFillBackground(true);
     }
 
-    LedState Led::state() const noexcept {
-        return state_;
+    LedStyle Led::style() const noexcept {
+        return style_;
     }
 
-    void Led::setState(LedState const& state) noexcept {
-        state_ = state;
-        stateChanged(state_);
+    void Led::setStyle(LedStyle const& style) noexcept {
+        style_ = style;
         update();
     }
 
@@ -159,7 +143,7 @@ namespace bbwidgets {
 
     void Led::paintEvent(QPaintEvent*) {
         QPainter painter(this);
-        state_.draw(painter, rect(), isEnabled());
+        style_.draw(painter, rect(), isEnabled());
     }
 
     void Led::changeEvent(QEvent* event) {

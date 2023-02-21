@@ -9,48 +9,36 @@
 namespace bbwidgets {
 
 
-    DLLEXPORT void drawLed(
-        QPainter& painter, QRectF const& pos, std::optional<int> hue, float activation, bool enabled) noexcept;
-
-    class DLLEXPORT LedState {
+    class DLLEXPORT LedStyle {
     public:
-        LedState(std::optional<int> hue = std::nullopt, bool checked = false) noexcept;
-        LedState(int hue, float saturation, float activation, bool checked) noexcept;
-        LedState(LedState const&) noexcept;
+        LedStyle(std::optional<int> hue = std::nullopt, bool checked = false) noexcept;
+        LedStyle(int hue, float saturation, float activation) noexcept;
+        LedStyle(LedStyle const&) noexcept;
 
-        ~LedState();
+        ~LedStyle();
 
-        LedState& operator=(LedState const&) noexcept;
-
-        void setHue(std::optional<int> hue) noexcept;
-        void setChecked(bool checked) noexcept;
-
-        [[nodiscard]] bool isChecked() const noexcept;
+        LedStyle& operator=(LedStyle const&) noexcept;
 
         void draw(QPainter& painter, QRectF const& pos, bool enabled) const noexcept;
 
-        [[nodiscard]] LedState lerp(LedState const& b, float t) const noexcept;
+        [[nodiscard]] LedStyle lerp(LedStyle const& b, float t) const noexcept;
 
     private:
         int hue_;
         float saturation_;
         float activation_;
-        bool checked_;
     };
 
     class DLLEXPORT Led: public QWidget {
         Q_OBJECT
-        Q_PROPERTY(LedState state READ state WRITE setState NOTIFY stateChanged)
+        Q_PROPERTY(LedStyle style READ style WRITE setStyle)
 
     public:
         Led(QWidget* parent = nullptr) noexcept;
-        Led(LedState const& state, QWidget* parent = nullptr) noexcept;
+        Led(LedStyle const& style, QWidget* parent = nullptr) noexcept;
 
-        [[nodiscard]] LedState state() const noexcept;
-        void setState(LedState const& state) noexcept;
-
-    signals:
-        void stateChanged(LedState const& state);
+        [[nodiscard]] LedStyle style() const noexcept;
+        void setStyle(LedStyle const& style) noexcept;
 
     protected:
         [[nodiscard]] QSize sizeHint() const override;
@@ -58,10 +46,10 @@ namespace bbwidgets {
         void changeEvent(QEvent* event) override;
 
     private:
-        LedState state_;
+        LedStyle style_;
     };
 
 
 }
 
-Q_DECLARE_METATYPE(bbwidgets::LedState);
+Q_DECLARE_METATYPE(bbwidgets::LedStyle);

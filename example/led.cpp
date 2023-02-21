@@ -35,11 +35,11 @@ int main(int argc, char** argv) {
                     };
                     led->setEnabled(enable);
 
-                    QPropertyAnimation* anim = new QPropertyAnimation(led, "state", led);
+                    QPropertyAnimation* anim = new QPropertyAnimation(led, "style", led);
                     anim->setDuration(1000);
                     anim->setEasingCurve(QEasingCurve::InOutQuart);
-                    anim->setStartValue(QVariant::fromValue(bbwidgets::LedState{hue, check}));
-                    anim->setEndValue(QVariant::fromValue(bbwidgets::LedState{hue ? *hue + 360 / count : 120, !check}));
+                    anim->setStartValue(QVariant::fromValue(bbwidgets::LedStyle{hue, check}));
+                    anim->setEndValue(QVariant::fromValue(bbwidgets::LedStyle{hue ? *hue + 360 / count : 120, !check}));
                     anim->start();
 
                     anim->connect(anim, &QPropertyAnimation::finished, [anim] {
