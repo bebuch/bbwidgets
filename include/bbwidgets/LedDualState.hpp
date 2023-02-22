@@ -2,8 +2,6 @@
 
 #include "LedAnimated.hpp"
 
-#include <chrono>
-
 namespace bbwidgets {
 
 
@@ -21,6 +19,9 @@ namespace bbwidgets {
         void setChecked(bool checked) noexcept;
         void setOnHue(std::optional<int> hue) noexcept;
         void setOffHue(std::optional<int> hue) noexcept;
+
+    signals:
+        void stateChanged(bool checked);
 
     private:
         bool checked_;
