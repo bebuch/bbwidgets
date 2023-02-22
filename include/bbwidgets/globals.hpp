@@ -16,7 +16,7 @@ namespace bbwidgets {
 
 
     template <std::signed_integral T>
-    constexpr T cyclic_adapt(T const value, T const begin, T const end) {
+    [[nodiscard]] constexpr T cyclic_adapt(T const value, T const begin, T const end) {
         auto const diff = end - begin;
         auto const based = value - begin;
         auto mod = based % diff;

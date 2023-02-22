@@ -19,8 +19,8 @@ namespace bbwidgets {
         void setAnimationDuration(std::chrono::milliseconds duration) noexcept;
         void setAnimationEasingCurve(QEasingCurve easing_curve) noexcept;
 
-        std::chrono::milliseconds animationDuration() const noexcept;
-        QEasingCurve animationEasingCurve() const noexcept;
+        [[nodiscard]] std::chrono::milliseconds animationDuration() const noexcept;
+        [[nodiscard]] QEasingCurve animationEasingCurve() const noexcept;
 
     protected:
         void startAnimation(LedStyle const& target) noexcept;

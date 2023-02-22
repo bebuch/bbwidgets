@@ -12,11 +12,12 @@
 namespace bbwidgets {
 
 
-    static int normalizedHue(int const hue) noexcept {
+    static [[nodiscard]] int normalizedHue(int const hue) noexcept {
         return cyclic_adapt(hue, 0, 360);
     }
 
-    static QVariant ledStateInterpolator(LedStyle const& start, LedStyle const& end, qreal const progress) {
+    static [[nodiscard]] QVariant ledStateInterpolator(
+        LedStyle const& start, LedStyle const& end, qreal const progress) {
         return QVariant::fromValue(start.lerp(end, static_cast<float>(progress)));
     }
 

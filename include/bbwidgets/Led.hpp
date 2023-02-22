@@ -18,7 +18,7 @@ namespace bbwidgets {
         [[nodiscard]] LedStyle style() const noexcept;
         void setStyle(LedStyle const& style) noexcept;
 
-        Qt::Alignment alignment() const noexcept;
+        [[nodiscard]] Qt::Alignment alignment() const noexcept;
         void setAlignment(Qt::Alignment flag) noexcept;
 
     protected:
