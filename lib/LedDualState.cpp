@@ -21,6 +21,10 @@ namespace bbwidgets {
     }
 
     void LedDualState::setChecked(bool const checked) noexcept {
+        if(checked_ == checked) {
+            return;
+        }
+
         checked_ = checked;
         startAnimation(checked_ ? on_style_ : off_style_);
     }
