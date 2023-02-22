@@ -9,7 +9,6 @@ namespace bbwidgets {
 
     class DLLEXPORT Led: public QWidget {
         Q_OBJECT
-        Q_PROPERTY(LedStyle style READ style WRITE setStyle)
         Q_PROPERTY(Qt::Alignment alignment READ alignment WRITE setAlignment)
 
     public:

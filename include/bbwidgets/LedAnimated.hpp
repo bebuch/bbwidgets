@@ -3,7 +3,7 @@
 #include "Led.hpp"
 
 #include <QPointer>
-#include <QPropertyAnimation>
+#include <QVariantAnimation>
 
 #include <chrono>
 
@@ -26,7 +26,7 @@ namespace bbwidgets {
         void startAnimation(LedStyle const& target) noexcept;
 
     private:
-        QPointer<QPropertyAnimation> animation_ = nullptr;
+        QPointer<QVariantAnimation> animation_ = nullptr;
         std::chrono::milliseconds duration_ = {};
         QEasingCurve easing_curve_ = {};
     };

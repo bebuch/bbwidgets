@@ -40,12 +40,16 @@ namespace bbwidgets {
             animation_->stop();
         }
 
-        animation_ = new QPropertyAnimation(this, "style", this);
+        animation_ = new QVariantAnimation(this);
         animation_->setDuration(duration_.count());
         animation_->setEasingCurve(easing_curve_);
         animation_->setStartValue(QVariant::fromValue(style()));
         animation_->setEndValue(QVariant::fromValue(target));
         animation_->start(QAbstractAnimation::DeleteWhenStopped);
+
+        connect(animation_, &QVariantAnimation::valueChanged, [this](QVariant const& style) {
+            setStyle(qvariant_cast<LedStyle>(style));
+        });
     }
 
 
