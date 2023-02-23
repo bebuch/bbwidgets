@@ -22,6 +22,10 @@ namespace bbwidgets {
             setStyle(styleOf(state_));
         }
 
+        LedMultiState(LedMultiState const&) = delete;
+
+        LedMultiState& operator=(LedMultiState const&) = delete;
+
         [[nodiscard]] State state() const {
             return state_;
         }

@@ -14,6 +14,9 @@ namespace bbwidgets {
     public:
         Led(QWidget* parent = nullptr) noexcept;
         Led(LedStyle const& style, QWidget* parent = nullptr) noexcept;
+        Led(Led const&) = delete;
+
+        Led& operator=(Led const&) = delete;
 
         [[nodiscard]] LedStyle style() const noexcept;
         void setStyle(LedStyle const& style) noexcept;

@@ -13,6 +13,9 @@ namespace bbwidgets {
         LedDualState(QWidget* parent = nullptr) noexcept;
         LedDualState(std::optional<int> on_hue, QWidget* parent = nullptr) noexcept;
         LedDualState(std::optional<int> on_hue, std::optional<int> off_hue, QWidget* parent = nullptr) noexcept;
+        LedDualState(LedDualState const&) = delete;
+
+        LedDualState& operator=(LedDualState const&) = delete;
 
         [[nodiscard]] bool isChecked() const noexcept;
 

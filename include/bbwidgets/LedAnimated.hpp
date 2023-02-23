@@ -15,6 +15,9 @@ namespace bbwidgets {
 
     public:
         LedAnimated(LedStyle const& style, QWidget* parent) noexcept;
+        LedAnimated(LedAnimated const&) = delete;
+
+        LedAnimated& operator=(LedAnimated const&) = delete;
 
         void setAnimationDuration(std::chrono::milliseconds duration) noexcept;
         void setAnimationEasingCurve(QEasingCurve easing_curve) noexcept;

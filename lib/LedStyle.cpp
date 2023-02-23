@@ -14,11 +14,11 @@ Q_DECLARE_METATYPE(bbwidgets::LedStyle);
 namespace bbwidgets {
 
 
-    static [[nodiscard]] int normalizedHue(int const hue) noexcept {
+    [[nodiscard]] static int normalizedHue(int const hue) noexcept {
         return cyclic_adapt(hue, 0, 360);
     }
 
-    static [[nodiscard]] QVariant ledStateInterpolator(
+    [[nodiscard]] static QVariant ledStateInterpolator(
         LedStyle const& start, LedStyle const& end, qreal const progress) {
         return start.lerp(end, static_cast<float>(progress));
     }
@@ -29,7 +29,7 @@ namespace bbwidgets {
         auto const basic_color = [this, enabled] {
             auto const lightness = std::lerp(.2f, .4f, activation_);
             auto const saturation = enabled ? saturation_ : std::lerp(.0f, .15f, saturation_);
-            return QColor::fromHslF(hue_ / 360.f, saturation, lightness);
+            return QColor::fromHslF(static_cast<float>(hue_) / 360.f, saturation, lightness);
         }();
         auto const border_color = basic_color.darker(150);
 
