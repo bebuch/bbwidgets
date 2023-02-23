@@ -11,7 +11,7 @@ namespace bbwidgets {
         : Led(LedStyle{}, parent) {}
 
     Led::Led(LedStyle const& state, QWidget* const parent) noexcept
-        : QWidget(parent)
+        : QFrame(parent)
         , style_(state) {
         setAutoFillBackground(true);
     }
@@ -39,11 +39,19 @@ namespace bbwidgets {
         return {s, s};
     }
 
-    void Led::paintEvent(QPaintEvent*) {
+    void Led::paintEvent(QPaintEvent* const event) {
+        QFrame::paintEvent(event);
+
         QPainter painter(this);
-        auto const [w, h] = QSizeF(size());
+        auto const content_rect = QRectF(contentsRect());
+        if(!content_rect.isValid()) {
+            return;
+        }
+
+        auto const [x, y] = content_rect.topLeft();
+        auto const [w, h] = content_rect.size();
         auto const s = std::min(w, h);
-        auto const x = [this, w, s] {
+        auto const sx = [this, w, s] {
             if(alignment_ & Qt::AlignLeft) {
                 return qreal(0);
             } else if(alignment_ & Qt::AlignRight) {
@@ -52,7 +60,7 @@ namespace bbwidgets {
                 return w / 2 - s / 2;
             }
         }();
-        auto const y = [this, h, s] {
+        auto const sy = [this, h, s] {
             if(alignment_ & Qt::AlignTop) {
                 return qreal(0);
             } else if(alignment_ & Qt::AlignBottom) {
@@ -61,7 +69,7 @@ namespace bbwidgets {
                 return h / 2 - s / 2;
             }
         }();
-        auto const square = QRectF{x, y, s, s};
+        auto const square = QRectF{sx + x, sy + y, s, s};
         style_.draw(painter, square, isEnabled());
     }
 

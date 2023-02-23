@@ -2,12 +2,12 @@
 
 #include "LedStyle.hpp"
 
-#include <QWidget>
+#include <QFrame>
 
 namespace bbwidgets {
 
 
-    class DLLEXPORT Led: public QWidget {
+    class DLLEXPORT Led: public QFrame {
         Q_OBJECT
         Q_PROPERTY(Qt::Alignment alignment READ alignment WRITE setAlignment)
 
