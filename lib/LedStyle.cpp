@@ -9,6 +9,8 @@
 #include <cmath>
 #include <numeric>
 
+Q_DECLARE_METATYPE(bbwidgets::LedStyle);
+
 namespace bbwidgets {
 
 
@@ -18,7 +20,7 @@ namespace bbwidgets {
 
     static [[nodiscard]] QVariant ledStateInterpolator(
         LedStyle const& start, LedStyle const& end, qreal const progress) {
-        return QVariant::fromValue(start.lerp(end, static_cast<float>(progress)));
+        return start.lerp(end, static_cast<float>(progress));
     }
 
     void LedStyle::draw(QPainter& painter, QRectF const& rect, bool const enabled) const noexcept {
@@ -116,7 +118,9 @@ namespace bbwidgets {
 
     LedStyle& LedStyle::operator=(LedStyle const&) noexcept = default;
 
+    LedStyle::operator QVariant() const noexcept {
+        return QVariant::fromValue<LedStyle>(*this);
+    }
+
 
 }
-
-Q_DECLARE_METATYPE(bbwidgets::LedStyle);

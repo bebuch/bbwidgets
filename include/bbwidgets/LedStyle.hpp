@@ -3,6 +3,7 @@
 #include "globals.hpp"
 
 #include <QPainter>
+#include <QVariant>
 
 #include <optional>
 
@@ -22,6 +23,8 @@ namespace bbwidgets {
         void draw(QPainter& painter, QRectF const& pos, bool enabled) const noexcept;
 
         [[nodiscard]] LedStyle lerp(LedStyle const& b, float t) const noexcept;
+
+        operator QVariant() const noexcept;
 
     private:
         int hue_;
